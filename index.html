@@ -545,39 +545,95 @@
                     </div>
                 </div>
 
-                <div class="property-card" data-type="alquiler nave">
-                    <div class="property-image">
-                        <div class="property-type">Alquiler</div>
-                        <i class="fas fa-warehouse" style="font-size: 3rem;"></i>
-                    </div>
-                    <div class="property-info">
-                        <div class="property-price">1.200€/mes</div>
-                        <div class="property-title">Nave Industrial Polígono</div>
-                        <div class="property-details">
-                            <span><i class="fas fa-expand-arrows-alt"></i> 200m²</span>
-                            <span><i class="fas fa-truck"></i> Acceso camión</span>
-                            <span><i class="fas fa-car"></i> Parking</span>
-                        </div>
-                        <p>Nave perfecta para almacén o taller, con fácil acceso.</p>
-                    </div>
-                </div>
+               <div class="property-card" data-type="alquiler nave">
+    <div class="property-image">
+        <div class="property-type">Alquiler</div>
 
-                <div class="property-card" data-type="venta nave">
-                    <div class="property-image">
-                        <div class="property-type">Venta</div>
-                        <i class="fas fa-industry" style="font-size: 3rem;"></i>
-                    </div>
-                    <div class="property-info">
-                        <div class="property-price">350.000€</div>
-                        <div class="property-title">Nave con Oficinas</div>
-                        <div class="property-details">
-                            <span><i class="fas fa-expand-arrows-alt"></i> 400m²</span>
-                            <span><i class="fas fa-building"></i> Oficinas</span>
-                            <span><i class="fas fa-tools"></i> Equipada</span>
-                        </div>
-                        <p>Nave industrial con zona de oficinas, ideal para negocio.</p>
-                    </div>
-                </div>
+        <!-- Carrusel -->
+        <div class="carousel">
+            <div class="carousel-images">
+                <img src="https://casadomu.wordpress.com/wp-content/uploads/2025/08/whatsapp-image-2025-08-25-at-09.51.26.jpeg" alt="Nave 1">
+                <img src="https://casadomu.wordpress.com/wp-content/uploads/2025/08/whatsapp-image-2025-08-25-at-09.51.261.jpeg" alt="Nave 2">
+                <img src="https://casadomu.wordpress.com/wp-content/uploads/2025/08/whatsapp-image-2025-08-25-at-09.51.25.jpeg" alt="Nave 3">
+            </div>
+            <button class="carousel-btn prev">&#10094;</button>
+            <button class="carousel-btn next">&#10095;</button>
+        </div>
+    </div>
+
+    <div class="property-info">
+        <div class="property-price">800€/mes</div>
+        <div class="property-title">Nave Industrial en Gójar</div>
+        <div class="property-details">
+            <span><i class="fas fa-expand-arrows-alt"></i> Nave 224m²</span>
+            <span><i class="fas fa-expand-arrows-alt"></i> Porche 215m²</span>
+            <span><i class="fas fa-building"></i> Oficinas 187m²</span>
+        </div>
+        <p>Nave perfecta para almacén o taller, con fácil acceso.</p>
+    </div>
+</div>
+
+<style>
+/* ==== Carrusel ==== */
+.carousel {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.carousel-images {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-images img {
+    width: 100%;
+    flex-shrink: 0;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.carousel-btn.prev { left: 10px; }
+.carousel-btn.next { right: 10px; }
+</style>
+
+<script>
+const carousels = document.querySelectorAll('.carousel');
+
+carousels.forEach(carousel => {
+    const images = carousel.querySelector('.carousel-images');
+    const imgCount = images.children.length;
+    let index = 0;
+
+    const updateCarousel = () => {
+        images.style.transform = `translateX(${-index * 100}%)`;
+    };
+
+    carousel.querySelector('.next').addEventListener('click', () => {
+        index = (index + 1) % imgCount;
+        updateCarousel();
+    });
+
+    carousel.querySelector('.prev').addEventListener('click', () => {
+        index = (index - 1 + imgCount) % imgCount;
+        updateCarousel();
+    });
+});
+</script>
+
+
 
                 <div class="property-card" data-type="alquiler piso">
                     <div class="property-image">
@@ -652,7 +708,7 @@
                 <div class="contact-card">
                     <i class="fab fa-whatsapp"></i>
                     <h3>WhatsApp</h3>
-                    <a href="https://wa.me/34600000000" target="_blank">
+                    <a href="https://wa.me/34619050568" target="_blank">
                         Enviar mensaje
                     </a>
                 </div>
@@ -660,14 +716,14 @@
                     <i class="fas fa-phone"></i>
                     <h3>Teléfono</h3>
                     <a href="tel:+34958000000">
-                        958 00 00 00
+                        619 05 05 68
                     </a>
                 </div>
                 <div class="contact-card">
                     <i class="fas fa-envelope"></i>
                     <h3>Email</h3>
                     <a href="mailto:info@agtase.com">
-                        info@agtase.com
+                        agtase@gmail.com
                     </a>
                 </div>
             </div>
