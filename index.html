@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGTASE - Alquiler y Venta de Propiedades</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 120px 2rem 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><polygon fill="rgba(255,255,255,0.1)" points="0,20 100,0 100,20"/></svg>') repeat-x;
+            background-size: 100px 20px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Sections */
+        section {
+            padding: 80px 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        /* Properties Section */
+        .properties {
+            background: white;
+        }
+
+        .property-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active,
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .property-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .property-image {
+            height: 250px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .property-info {
+            padding: 1.5rem;
+        }
+
+        .property-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .property-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        .property-details {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: #666;
+        }
+
+        .property-type {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* Map Section */
+        .map-section {
+            background: #f8f9fa;
+        }
+
+        .map-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        #map {
+            height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .map-info {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Modal para añadir propiedades */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h3 {
+            color: #667eea;
+            margin: 0;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-cancel {
+            background: #ccc;
+            color: #333;
+        }
+
+        .editing-mode {
+            cursor: crosshair !important;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 3rem;
+        }
+
+        .contact-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .contact-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .contact-card i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .contact-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-card a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* Footer */
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.1rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .properties-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-on-scroll {
+            animation: fadeInUp 0.6s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="#" class="logo">AGTASE</a>
+            <ul class="nav-links">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#propiedades">Propiedades</a></li>
+                <li><a href="#mapa">Ubicaciones</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="inicio" class="hero">
+        <div class="hero-content">
+            <h1>AGTASE</h1>
+            <p>Tu socio de confianza en alquiler y venta de propiedades en Granada</p>
+            <div class="cta-buttons">
+                <a href="#propiedades" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    Ver Propiedades
+                </a>
+                <a href="#contacto" class="btn btn-secondary">
+                    <i class="fab fa-whatsapp"></i>
+                    Contactar
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section id="propiedades" class="properties">
+        <div class="container">
+            <h2 class="section-title">Nuestras Propiedades</h2>
+            
+            <div class="property-filters">
+                <button class="filter-btn active" data-filter="all">Todas</button>
+                <button class="filter-btn" data-filter="alquiler">Alquiler</button>
+                <button class="filter-btn" data-filter="venta">Venta</button>
+                <button class="filter-btn" data-filter="piso">Pisos</button>
+                <button class="filter-btn" data-filter="nave">Naves</button>
+            </div>
+
+            <div class="properties-grid" id="propertiesGrid">
+                <!-- Propiedades de ejemplo -->
+                <div class="property-card" data-type="alquiler piso">
+                    <div class="property-image">
+                        <div class="property-type">Alquiler</div>
+                        <i class="fas fa-home" style="font-size: 3rem;"></i>
+                    </div>
+                    <div class="property-info">
+                        <div class="property-price">850€/mes</div>
+                        <div class="property-title">Piso en Centro Histórico</div>
+                        <div class="property-details">
+                            <span><i class="fas fa-bed"></i> 3 hab.</span>
+                            <span><i class="fas fa-bath"></i> 2 baños</span>
+                            <span><i class="fas fa-expand-arrows-alt"></i> 95m²</span>
+                        </div>
+                        <p>Hermoso piso en el corazón de Granada, cerca de la Catedral.</p>
+                    </div>
+                </div>
+
+                <div class="property-card" data-type="venta piso">
+                    <div class="property-image">
+                        <div class="property-type">Venta</div>
+                        <i class="fas fa-building" style="font-size: 3rem;"></i>
+                    </div>
+                    <div class="property-info">
+                        <div class="property-price">195.000€</div>
+                        <div class="property-title">Piso Moderno Zaidín</div>
+                        <div class="property-details">
+                            <span><i class="fas fa-bed"></i> 2 hab.</span>
+                            <span><i class="fas fa-bath"></i> 1 baño</span>
+                            <span><i class="fas fa-expand-arrows-alt"></i> 80m²</span>
+                        </div>
+                        <p>Piso completamente renovado con acabados de primera calidad.</p>
+                    </div>
+                </div>
+
+                <div class="property-card" data-type="alquiler nave">
+                    <div class="property-image">
+                        <div class="property-type">Alquiler</div>
+                        <i class="fas fa-warehouse" style="font-size: 3rem;"></i>
+                    </div>
+                    <div class="property-info">
+                        <div class="property-price">1.200€/mes</div>
+                        <div class="property-title">Nave Industrial Polígono</div>
+                        <div class="property-details">
+                            <span><i class="fas fa-expand-arrows-alt"></i> 200m²</span>
+                            <span><i class="fas fa-truck"></i> Acceso camión</span>
+                            <span><i class="fas fa-car"></i> Parking</span>
+                        </div>
+                        <p>Nave perfecta para almacén o taller, con fácil acceso.</p>
+                    </div>
+                </div>
+
+                <div class="property-card" data-type="venta nave">
+                    <div class="property-image">
+                        <div class="property-type">Venta</div>
+                        <i class="fas fa-industry" style="font-size: 3rem;"></i>
+                    </div>
+                    <div class="property-info">
+                        <div class="property-price">350.000€</div>
+                        <div class="property-title">Nave con Oficinas</div>
+                        <div class="property-details">
+                            <span><i class="fas fa-expand-arrows-alt"></i> 400m²</span>
+                            <span><i class="fas fa-building"></i> Oficinas</span>
+                            <span><i class="fas fa-tools"></i> Equipada</span>
+                        </div>
+                        <p>Nave industrial con zona de oficinas, ideal para negocio.</p>
+                    </div>
+                </div>
+
+                <div class="property-card" data-type="alquiler piso">
+                    <div class="property-image">
+                        <div class="property-type">Alquiler</div>
+                        <i class="fas fa-home" style="font-size: 3rem;"></i>
+                    </div>
+                    <div class="property-info">
+                        <div class="property-price">650€/mes</div>
+                        <div class="property-title">Piso Realejo</div>
+                        <div class="property-details">
+                            <span><i class="fas fa-bed"></i> 2 hab.</span>
+                            <span><i class="fas fa-bath"></i> 1 baño</span>
+                            <span><i class="fas fa-expand-arrows-alt"></i> 70m²</span>
+                        </div>
+                        <p>Acogedor piso en el barrio del Realejo, muy tranquilo.</p>
+                    </div>
+                </div>
+
+                <div class="property-card" data-type="venta piso">
+                    <div class="property-image">
+                        <div class="property-type">Venta</div>
+                        <i class="fas fa-building" style="font-size: 3rem;"></i>
+                    </div>
+                    <div class="property-info">
+                        <div class="property-price">280.000€</div>
+                        <div class="property-title">Ático con Terraza</div>
+                        <div class="property-details">
+                            <span><i class="fas fa-bed"></i> 3 hab.</span>
+                            <span><i class="fas fa-bath"></i> 2 baños</span>
+                            <span><i class="fas fa-expand-arrows-alt"></i> 120m²</span>
+                        </div>
+                        <p>Espectacular ático con terraza y vistas panorámicas.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="mapa" class="map-section">
+        <div class="container">
+            <h2 class="section-title">Ubicaciones de Nuestras Propiedades</h2>
+            <div class="map-controls">
+                <button id="adminLoginBtn" class="btn btn-secondary">
+                    <i class="fas fa-key"></i> Acceso Administrador
+                </button>
+                <div id="adminControls" style="display: none;">
+                    <button id="addPropertyBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Añadir Propiedad
+                    </button>
+                    <button id="editModeBtn" class="btn btn-secondary">
+                        <i class="fas fa-edit"></i> Modo Edición
+                    </button>
+                    <button id="saveModeBtn" class="btn btn-primary" style="display: none;">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                    <button id="logoutBtn" class="btn btn-cancel">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </button>
+                </div>
+            </div>
+            <div id="map"></div>
+            <div class="map-info">
+                <p><i class="fas fa-info-circle"></i> Mapa interactivo con todas nuestras propiedades disponibles. Haz click en los marcadores para ver más detalles.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="contacto" class="contact">
+        <div class="container">
+            <h2 class="section-title">Contacta con Nosotros</h2>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <i class="fab fa-whatsapp"></i>
+                    <h3>WhatsApp</h3>
+                    <a href="https://wa.me/34600000000" target="_blank">
+                        Enviar mensaje
+                    </a>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-phone"></i>
+                    <h3>Teléfono</h3>
+                    <a href="tel:+34958000000">
+                        958 00 00 00
+                    </a>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email</h3>
+                    <a href="mailto:info@agtase.com">
+                        info@agtase.com
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 AGTASE. Todos los derechos reservados. | Inmobiliaria en Granada</p>
+        </div>
+    </footer>
+
+    <!-- Modal para login de administrador -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Acceso Administrador</h3>
+                <span class="close" id="loginClose">&times;</span>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="adminPassword">Contraseña:</label>
+                    <input type="password" id="adminPassword" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-cancel" id="loginCancelBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Acceder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para añadir/editar propiedades -->
+    <div id="propertyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Añadir Nueva Propiedad</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="propertyForm">
+                <div class="form-group">
+                    <label for="propertyName">Nombre de la Propiedad:</label>
+                    <input type="text" id="propertyName" required>
+                </div>
+                <div class="form-group">
+                    <label for="propertyPrice">Precio:</label>
+                    <input type="text" id="propertyPrice" placeholder="ej: 850€/mes o 195.000€" required>
+                </div>
+                <div class="form-group">
+                    <label for="propertyType">Tipo:</label>
+                    <select id="propertyType" required>
+                        <option value="">Seleccionar tipo</option>
+                        <option value="Alquiler">Alquiler</option>
+                        <option value="Venta">Venta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="propertyCategory">Categoría:</label>
+                    <select id="propertyCategory" required>
+                        <option value="">Seleccionar categoría</option>
+                        <option value="Piso">Piso</option>
+                        <option value="Nave">Nave Industrial</option>
+                        <option value="Local">Local Comercial</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="propertyDescription">Descripción:</label>
+                    <textarea id="propertyDescription" rows="3" placeholder="Descripción breve de la propiedad"></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-cancel" id="cancelBtn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Smooth scrolling para los enlaces del menú
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Filtros de propiedades
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const propertyCards = document.querySelectorAll('.property-card');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remover clase activa de todos los botones
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                // Añadir clase activa al botón clickeado
+                button.classList.add('active');
+
+                const filter = button.getAttribute('data-filter');
+
+                propertyCards.forEach(card => {
+                    if (filter === 'all') {
+                        card.style.display = 'block';
+                    } else {
+                        const cardTypes = card.getAttribute('data-type').split(' ');
+                        if (cardTypes.includes(filter)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+
+        // Inicializar mapa de Granada
+        const map = L.map('map').setView([37.1773, -3.5986], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Variables para el manejo de propiedades
+        let properties = [
+            {
+                id: 1,
+                lat: 37.1760,
+                lng: -3.5881,
+                title: 'Piso Centro Histórico',
+                price: '850€/mes',
+                type: 'Alquiler',
+                category: 'Piso',
+                description: 'Hermoso piso en el corazón de Granada, cerca de la Catedral.'
+            },
+            {
+                id: 2,
+                lat: 37.1500,
+                lng: -3.6200,
+                title: 'Piso Moderno Zaidín',
+                price: '195.000€',
+                type: 'Venta',
+                category: 'Piso',
+                description: 'Piso completamente renovado con acabados de primera calidad.'
+            },
+            {
+                id: 3,
+                lat: 37.1900,
+                lng: -3.6100,
+                title: 'Nave Industrial',
+                price: '1.200€/mes',
+                type: 'Alquiler',
+                category: 'Nave',
+                description: 'Nave perfecta para almacén o taller, con fácil acceso.'
+            },
+            {
+                id: 4,
+                lat: 37.1650,
+                lng: -3.5950,
+                title: 'Piso Realejo',
+                price: '650€/mes',
+                type: 'Alquiler',
+                category: 'Piso',
+                description: 'Acogedor piso en el barrio del Realejo, muy tranquilo.'
+            },
+            {
+                id: 5,
+                lat: 37.1800,
+                lng: -3.5800,
+                title: 'Ático con Terraza',
+                price: '280.000€',
+                type: 'Venta',
+                category: 'Piso',
+                description: 'Espectacular ático con terraza y vistas panorámicas.'
+            }
+        ];
+
+        let markers = [];
+        let isEditMode = false;
+        let editingMarker = null;
+        let tempLatLng = null;
+        let isAdminLoggedIn = false;
+
+        // ⚠️ CAMBIA ESTA CONTRASEÑA POR LA QUE QUIERAS USAR
+        const ADMIN_PASSWORD = "agtase2025";
+
+        // Función para crear icono personalizado
+        function createCustomIcon(type) {
+            const color = type === 'Venta' ? '#e74c3c' : '#2ecc71';
+            return L.divIcon({
+                html: `<div style="background-color: ${color}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 12px; border: 3px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">${type === 'Venta' ? 'V' : 'A'}</div>`,
+                className: 'custom-marker',
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+            });
+        }
+
+        // Función para renderizar marcadores
+        function renderMarkers() {
+            // Limpiar marcadores existentes
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+
+            // Añadir marcadores actualizados
+            properties.forEach(property => {
+                const marker = L.marker([property.lat, property.lng], {
+                    icon: createCustomIcon(property.type),
+                    draggable: isEditMode
+                }).addTo(map);
+
+                const popupContent = `
+                    <div style="text-align: center; min-width: 200px;">
+                        <strong style="color: #667eea; font-size: 14px;">${property.title}</strong><br>
+                        <span style="color: #2c3e50; font-weight: bold; font-size: 13px;">${property.price}</span><br>
+                        <span style="background: ${property.type === 'Venta' ? '#e74c3c' : '#2ecc71'}; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin: 2px;">
+                            ${property.type}
+                        </span>
+                        <span style="background: #667eea; color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin: 2px;">
+                            ${property.category}
+                        </span><br>
+                        <p style="font-size: 11px; margin: 5px 0; color: #666;">${property.description}</p>
+                        ${(isEditMode && isAdminLoggedIn) ? `<button onclick="editProperty(${property.id})" style="background: #667eea; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 10px; margin: 2px;">Editar</button>
+                        <button onclick="deleteProperty(${property.id})" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 10px; margin: 2px;">Eliminar</button>` : ''}
+                    </div>
+                `;
+
+                marker.bindPopup(popupContent);
+                
+                // Evento para mover marcador en modo edición
+                if (isEditMode && isAdminLoggedIn) {
+                    marker.on('dragend', function(e) {
+                        const newLatLng = e.target.getLatLng();
+                        property.lat = newLatLng.lat;
+                        property.lng = newLatLng.lng;
+                    });
+                }
+
+                markers.push(marker);
+            });
+        }
+
+        // Variables para el modal de login
+        const loginModal = document.getElementById('loginModal');
+        const loginForm = document.getElementById('loginForm');
+        const adminPassword = document.getElementById('adminPassword');
+        const loginClose = document.getElementById('loginClose');
+        const loginCancelBtn = document.getElementById('loginCancelBtn');
+
+        // Variables para el modal de propiedades
+        const modal = document.getElementById('propertyModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const propertyForm = document.getElementById('propertyForm');
+        const closeBtn = document.getElementsByClassName('close')[0];
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        // Elementos del formulario
+        const propertyName = document.getElementById('propertyName');
+        const propertyPrice = document.getElementById('propertyPrice');
+        const propertyType = document.getElementById('propertyType');
+        const propertyCategory = document.getElementById('propertyCategory');
+        const propertyDescription = document.getElementById('propertyDescription');
+
+        // Botones de control del mapa
+        const adminLoginBtn = document.getElementById('adminLoginBtn');
+        const adminControls = document.getElementById('adminControls');
+        const addPropertyBtn = document.getElementById('addPropertyBtn');
+        const editModeBtn = document.getElementById('editModeBtn');
+        const saveModeBtn = document.getElementById('saveModeBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Event listeners para login de administrador
+        adminLoginBtn.addEventListener('click', () => {
+            loginModal.style.display = 'block';
+        });
+
+        loginClose.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+            adminPassword.value = '';
+        });
+
+        loginCancelBtn.addEventListener('click', () => {
+            loginModal.style.display = 'none';
+            adminPassword.value = '';
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (adminPassword.value === ADMIN_PASSWORD) {
+                isAdminLoggedIn = true;
+                adminControls.style.display = 'flex';
+                adminLoginBtn.style.display = 'none';
+                loginModal.style.display = 'none';
+                adminPassword.value = '';
+                renderMarkers();
+            } else {
+                alert('Contraseña incorrecta');
+                adminPassword.value = '';
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            isAdminLoggedIn = false;
+            isEditMode = false;
+            adminControls.style.display = 'none';
+            adminLoginBtn.style.display = 'inline-flex';
+            map.getContainer().classList.remove('editing-mode');
+            map.off('click', onMapClick);
+            editModeBtn.style.display = 'inline-flex';
+            saveModeBtn.style.display = 'none';
+            renderMarkers();
+        });
+
+        // Event listeners para los botones de administración
+        addPropertyBtn.addEventListener('click', () => {
+            if (!isEditMode) {
+                toggleEditMode();
+            }
+            modalTitle.textContent = 'Añadir Nueva Propiedad';
+            editingMarker = null;
+            clearForm();
+            alert('Ahora haz click en el mapa donde quieres colocar la nueva propiedad.');
+        });
+
+        editModeBtn.addEventListener('click', toggleEditMode);
+        saveModeBtn.addEventListener('click', toggleEditMode);
+
+        // Event listeners para el modal
+        closeBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        
+        // Cerrar modales si se hace click fuera de ellos
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+            if (e.target === loginModal) {
+                loginModal.style.display = 'none';
+                adminPassword.value = '';
+            }
+        });
+
+        // Función para alternar modo edición
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            
+            if (isEditMode) {
+                editModeBtn.style.display = 'none';
+                saveModeBtn.style.display = 'inline-flex';
+                addPropertyBtn.textContent = ' Añadir Propiedad';
+                addPropertyBtn.innerHTML = '<i class="fas fa-plus"></i> Añadir Propiedad';
+                map.getContainer().classList.add('editing-mode');
+                
+                // Añadir event listener para clicks en el mapa
+                map.on('click', onMapClick);
+            } else {
+                editModeBtn.style.display = 'inline-flex';
+                saveModeBtn.style.display = 'none';
+                map.getContainer().classList.remove('editing-mode');
+                
+                // Remover event listener para clicks en el mapa
+                map.off('click', onMapClick);
+            }
+            
+            renderMarkers();
+        }
+
+        // Función para manejar clicks en el mapa
+        function onMapClick(e) {
+            if (isEditMode && isAdminLoggedIn) {
+                tempLatLng = e.latlng;
+                modalTitle.textContent = 'Añadir Nueva Propiedad';
+                editingMarker = null;
+                clearForm();
+                modal.style.display = 'block';
+            }
+        }
+
+        // Función para editar propiedad
+        function editProperty(id) {
+            const property = properties.find(p => p.id === id);
+            if (property) {
+                editingMarker = property;
+                modalTitle.textContent = 'Editar Propiedad';
+                
+                propertyName.value = property.title;
+                propertyPrice.value = property.price;
+                propertyType.value = property.type;
+                propertyCategory.value = property.category;
+                propertyDescription.value = property.description;
+                
+                modal.style.display = 'block';
+            }
+        }
+
+        // Función para eliminar propiedad
+        function deleteProperty(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta propiedad?')) {
+                properties = properties.filter(p => p.id !== id);
+                renderMarkers();
+            }
+        }
+
+        // Función para limpiar formulario
+        function clearForm() {
+            propertyName.value = '';
+            propertyPrice.value = '';
+            propertyType.value = '';
+            propertyCategory.value = '';
+            propertyDescription.value = '';
+        }
+
+        // Función para cerrar modal
+        function closeModal() {
+            modal.style.display = 'none';
+            tempLatLng = null;
+            editingMarker = null;
+        }
+
+        // Manejar envío del formulario
+        propertyForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            if (editingMarker) {
+                // Editar propiedad existente
+                editingMarker.title = propertyName.value;
+                editingMarker.price = propertyPrice.value;
+                editingMarker.type = propertyType.value;
+                editingMarker.category = propertyCategory.value;
+                editingMarker.description = propertyDescription.value;
+            } else if (tempLatLng) {
+                // Añadir nueva propiedad
+                const newProperty = {
+                    id: Date.now(), // ID único basado en timestamp
+                    lat: tempLatLng.lat,
+                    lng: tempLatLng.lng,
+                    title: propertyName.value,
+                    price: propertyPrice.value,
+                    type: propertyType.value,
+                    category: propertyCategory.value,
+                    description: propertyDescription.value
+                };
+                properties.push(newProperty);
+            }
+            
+            renderMarkers();
+            closeModal();
+        });
+
+        // Renderizar marcadores iniciales
+        renderMarkers();
+
+        // Hacer las funciones globales para poder llamarlas desde los botones del popup
+        window.editProperty = editProperty;
+        window.deleteProperty = deleteProperty;
+
+        // Animaciones al hacer scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-on-scroll');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.property-card, .contact-card').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Header transparente al hacer scroll
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const header = document.querySelector('header');
+            
+            if (scrollTop > lastScrollTop) {
+                // Scrolling down
+                header.style.transform = 'translateY(-100%)';
+            } else {
+                // Scrolling up
+                header.style.transform = 'translateY(0)';
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+    </script>
+</body>
+</html>
