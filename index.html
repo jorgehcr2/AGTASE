@@ -67,45 +67,71 @@
         }
 
         /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 120px 2rem 80px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><polygon fill="rgba(255,255,255,0.1)" points="0,20 100,0 100,20"/></svg>') repeat-x;
-            background-size: 100px 20px;
-        }
-
-        .hero-content {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .hero p {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
+     .hero {
+    background: linear-gradient(120deg, #f7971e 0%, #48c6ef 60%, #764ba2 100%);
+    color: white;
+    padding: 140px 2rem 100px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 40px 0 rgba(76,42,178,0.15);
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: -60px;
+    width: 150%;
+    height: 120%;
+    background: url('https://img.freepik.com/vector-gratis/fondo-cielo-ciudad-edificios_23-2148381875.jpg?w=1200') center bottom/cover no-repeat;
+    opacity: 0.22;
+    z-index: 0;
+    pointer-events: none;
+}
+.hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 820px;
+    margin: 0 auto;
+    text-shadow: 1px 2px 14px rgba(80,60,140,0.11);
+}
+.hero h1 {
+    font-size: 4.2rem;
+    margin-bottom: 1.2rem;
+    font-weight: 900;
+    background: linear-gradient(90deg,#fff 30%,#ffd200 80%,#764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.hero p {
+    font-size: 1.5rem;
+    margin-bottom: 2.2rem;
+    color: #f9fafb;
+    text-shadow: 2px 4px 16px #764ba2a6;
+    font-weight: 500;
+}
+.hero-icons {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    margin-bottom: 2.2rem;
+}
+.hero-icons i {
+    font-size: 2.7rem;
+    background: linear-gradient(135deg,#f7971e 0,#ffd200 80%);
+    border-radius: 50%;
+    color: #764ba2;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 2px 10px 0 #ffd20066;
+    border: 2px solid #fff;
+}
+@media (max-width: 768px) {
+    .hero h1 { font-size: 2.4rem; }
+    .hero p { font-size: 1.05rem; }
+    .hero { padding-top: 90px; padding-bottom: 60px;}
+    .hero-icons i { font-size: 1.5rem; padding: 0.5rem 0.65rem; }
+}
         .cta-buttons {
             display: flex;
             gap: 1rem;
@@ -480,22 +506,28 @@
         </nav>
     </header>
 
-    <section id="inicio" class="hero">
-        <div class="hero-content">
-            <h1>AGTASE</h1>
-            <p>Tu socio de confianza en alquiler y venta de propiedades en Granada</p>
-            <div class="cta-buttons">
-                <a href="#propiedades" class="btn btn-primary">
-                    <i class="fas fa-home"></i>
-                    Ver Propiedades
-                </a>
-                <a href="#contacto" class="btn btn-secondary">
-                    <i class="fab fa-whatsapp"></i>
-                    Contactar
-                </a>
-            </div>
+<section id="inicio" class="hero">
+    <div class="hero-content">
+        <div class="hero-icons">
+            <i class="fas fa-home"></i>
+            <i class="fas fa-city"></i>
+            <i class="fas fa-warehouse"></i>
+            <i class="fas fa-handshake"></i>
         </div>
-    </section>
+        <h1>AGTASE</h1>
+        <p>Tu socio de confianza en alquiler y venta de propiedades en Granada</p>
+        <div class="cta-buttons">
+            <a href="#propiedades" class="btn btn-primary">
+                <i class="fas fa-home"></i>
+                Ver Propiedades
+            </a>
+            <a href="#contacto" class="btn btn-secondary">
+                <i class="fab fa-whatsapp"></i>
+                Contactar
+            </a>
+        </div>
+    </div>
+</section>
 
     <section id="propiedades" class="properties">
         <div class="container">
