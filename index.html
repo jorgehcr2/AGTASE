@@ -553,11 +553,11 @@
                     </div>
                 </div>
 
-               <div class="property-card" data-type="alquiler nave">
+             <div class="property-card" data-type="alquiler nave">
     <div class="property-image">
         <div class="property-type">Alquiler</div>
-
-        <!-- Carrusel -->
+        
+        <!-- Carrusel CORREGIDO -->
         <div class="carousel">
             <div class="carousel-images">
                 <img src="https://casadomu.wordpress.com/wp-content/uploads/2025/08/whatsapp-image-2025-08-25-at-09.51.26.jpeg" alt="Nave 1">
@@ -583,17 +583,14 @@
 
 <style>
 /* ==== Carrusel ==== */
+/* ==== Carrusel - ESTILOS CORREGIDOS ==== */
 .carousel {
     position: relative;
     width: 100%;
-    height: 250px; /* el alto de la imagen */
-    max-width: 400px;
+    height: 250px;
     overflow: hidden;
     border-radius: 10px;
     background: #eee;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .carousel-images {
@@ -606,41 +603,102 @@
 .carousel-images img {
     width: 100%;
     height: 100%;
-    object-fit: cover;     /* ESTA LINEA ES CLAVE */
-    border-radius: 8px;
+    object-fit: cover; /* Esta línea evita que las imágenes se deformen */
     flex-shrink: 0;
+    border-radius: 8px;
 }
 
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.3s;
+}
+
+.carousel-btn:hover {
+    background: rgba(255, 255, 255, 1);
+}
+
+.carousel-btn.prev {
+    left: 10px;
+}
+
+.carousel-btn.next {
+    right: 10px;
+}
+
+/* Asegurar que las property-image contengan correctamente el carrusel */
+.property-image {
+    position: relative;
+    height: 250px;
+    overflow: hidden;
+}
+
+/* Responsive para el carrusel */
 @media (max-width: 768px) {
     .carousel {
-        height: 140px; /* menos alto en móvil */
+        height: 200px;
     }
-    .carousel-images img {
-        height: 140px;
+    
+    .property-image {
+        height: 200px;
     }
 }
+
+@media (min-width: 1200px) {
+    .carousel {
+        height: 280px;
+    }
+    
+    .property-image {
+        height: 280px;
+    }
+}
+
 </style>
 
 <script>
-const carousels = document.querySelectorAll('.carousel');
-
-carousels.forEach(carousel => {
-    const images = carousel.querySelector('.carousel-images');
-    const imgCount = images.children.length;
-    let index = 0;
-
-    const updateCarousel = () => {
-        images.style.transform = `translateX(${-index * 100}%)`;
-    };
-
-    carousel.querySelector('.next').addEventListener('click', () => {
-        index = (index + 1) % imgCount;
+// CARRUSEL CORREGIDO - Debe ir ANTES del cierre de </body>
+document.addEventListener('DOMContentLoaded', function() {
+    const carousels = document.querySelectorAll('.carousel');
+    
+    carousels.forEach(carousel => {
+        const images = carousel.querySelector('.carousel-images');
+        const imgCount = images.children.length;
+        let index = 0;
+        
+        // Inicializar posición
         updateCarousel();
-    });
-
-    carousel.querySelector('.prev').addEventListener('click', () => {
-        index = (index - 1 + imgCount) % imgCount;
-        updateCarousel();
+        
+        function updateCarousel() {
+            images.style.transform = `translateX(${-index * 100}%)`;
+        }
+        
+        // Botón siguiente
+        carousel.querySelector('.next').addEventListener('click', () => {
+            index = (index + 1) % imgCount;
+            updateCarousel();
+        });
+        
+        // Botón anterior
+        carousel.querySelector('.prev').addEventListener('click', () => {
+            index = (index - 1 + imgCount) % imgCount;
+            updateCarousel();
+        });
+        
+        // Auto-avance cada 5 segundos (opcional)
+        setInterval(() => {
+            index = (index + 1) % imgCount;
+            updateCarousel();
+        }, 5000);
     });
 });
 </script>
